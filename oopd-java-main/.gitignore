@@ -1,0 +1,14 @@
+archives
+
+docs
+src.demo
+src.exercise
+
+*.zip
+
+*.class
+
+# Eclipse stuff
+.project
+.classpath
+.settings
