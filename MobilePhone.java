@@ -1,5 +1,5 @@
 
-import utils.*;
+import utils. *;
 
 enum Color {
     R, O, Y, B, P, Bl;
