@@ -48,7 +48,7 @@ class Game extends JPanel implements KeyListener, ActionListener {
 
     private void loadBirdImage() {
         try {
-            birdImage = ImageIO.read(new File("C:/Users/ADMIN/OneDrive/Pictures/Saved Pictures/download.png"));
+            birdImage = ImageIO.read(new File("download.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -61,10 +61,12 @@ class Game extends JPanel implements KeyListener, ActionListener {
     private void generatePipes() {
         Random rand = new Random();
         int x = 500; // Vị trí bắt đầu của ống đầu tiên
+        int minDistance = 250; // Minimum distance between pipes
+
         for (int i = 0; i < 5; i++) {
             int topHeight = rand.nextInt(250) + 50; // Đảm bảo khoảng trống đủ lớn
             pipes.add(new Pipe(x, topHeight));
-            x += 300; // Khoảng cách giữa các ống
+            x += minDistance + Pipe.WIDTH + 50; // Khoảng cách giữa các ống, đảm bảo không quá gần
         }
     }
 
@@ -88,9 +90,18 @@ class Game extends JPanel implements KeyListener, ActionListener {
                 newPipes.add(pipe);
             } else {
                 score++;
-                newPipes.add(new Pipe(500, new Random().nextInt(250) + 50));
             }
         }
+
+        if (!newPipes.isEmpty()) {
+            Pipe lastPipe = newPipes.get(newPipes.size() - 1);
+            if (lastPipe.x < 500) {
+                 newPipes.add(new Pipe(500 + Pipe.WIDTH + 200, new Random().nextInt(250) + 50));
+            }
+        } else {
+             newPipes.add(new Pipe(500 + Pipe.WIDTH + 200, new Random().nextInt(250) + 50));
+        }
+        
         pipes = newPipes;
     }
 
