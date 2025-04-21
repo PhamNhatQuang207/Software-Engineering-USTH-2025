@@ -4,7 +4,10 @@ import utils.*;
 /**
  * @overview A person has a phone
  *
- * @attributes ID Interger int Name String String Phone MobilePhone
+ * @attributes 
+ * ID Interger int 
+ * Name String String 
+ * Phone MobilePhone
  *
  *
  * @object A typical person is (id,name,phone)
@@ -35,7 +38,7 @@ public class Person {
     /**
      * @effects return id
      */
-    @DOpt(type = OptType.Mutator)
+    @DOpt(type = OptType.Observer)
     @AttrRef("ID")
     public int getId() {
         return id;
