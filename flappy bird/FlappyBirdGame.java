@@ -1,4 +1,7 @@
-import java.awt.*;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -10,6 +13,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class FlappyBirdGame {
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Flappy Bird");
@@ -27,8 +31,9 @@ public class FlappyBirdGame {
 }
 
 class Game extends JPanel implements KeyListener, ActionListener {
+
     private int birdY = 250, birdX = 100;
-    private int velocity = 0;
+    private double velocity = 0;  // Changed to double for smooth physics
     private boolean gameOver = false;
     private List<Pipe> pipes;
     private Timer timer;
@@ -68,13 +73,17 @@ class Game extends JPanel implements KeyListener, ActionListener {
             pipes.add(new Pipe(x, topHeight));
             x += minDistance + Pipe.WIDTH + 50; // Khoảng cách giữa các ống, đảm bảo không quá gần
         }
-    }
-
-    @Override
+    }    @Override
     public void actionPerformed(ActionEvent e) {
         if (!gameOver) {
-            velocity += 1;
-            birdY += velocity;
+            // Apply gravity with better physics
+            velocity += 0.4;  // Gravity constant
+            birdY += (int)velocity;  // Convert velocity to int for position
+
+            // Limit maximum fall speed
+            if (velocity > 12) {
+                velocity = 12;
+            }
 
             movePipes();
             checkCollisions();
@@ -96,12 +105,12 @@ class Game extends JPanel implements KeyListener, ActionListener {
         if (!newPipes.isEmpty()) {
             Pipe lastPipe = newPipes.get(newPipes.size() - 1);
             if (lastPipe.x < 500) {
-                 newPipes.add(new Pipe(500 + Pipe.WIDTH + 200, new Random().nextInt(250) + 50));
+                newPipes.add(new Pipe(500 + Pipe.WIDTH + 200, new Random().nextInt(250) + 50));
             }
         } else {
-             newPipes.add(new Pipe(500 + Pipe.WIDTH + 200, new Random().nextInt(250) + 50));
+            newPipes.add(new Pipe(500 + Pipe.WIDTH + 200, new Random().nextInt(250) + 50));
         }
-        
+
         pipes = newPipes;
     }
 
@@ -148,12 +157,14 @@ class Game extends JPanel implements KeyListener, ActionListener {
             g.setColor(Color.RED);
             g.drawString("Game Over!", 150, 300);
         }
-    }
-
-    @Override
+    }    @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && !gameOver) {
-            velocity = -10;
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            if (!gameOver) {
+                velocity = -7.5;  // Adjusted jump power for better control
+            } else {
+                restartGame();  // Restart with space when game is over
+            }
         } else if (e.getKeyCode() == KeyEvent.VK_R) {
             restartGame();
         }
@@ -170,13 +181,16 @@ class Game extends JPanel implements KeyListener, ActionListener {
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+    }
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 }
 
 class Pipe {
+
     int x, topHeight;
     static final int WIDTH = 75, HEIGHT = 600, GAP = 180; // Khoảng trống rộng hơn để chim dễ bay
 
@@ -191,10 +205,9 @@ class Pipe {
 
         // Vẽ ống dưới
         g.fillRect(x, topHeight + GAP, WIDTH, HEIGHT - (topHeight + GAP));
-    }
-
-    public boolean collidesWith(int birdX, int birdY) {
-        return (birdX + 50 > x && birdX < x + WIDTH &&
-                (birdY < topHeight || birdY + 50 > topHeight + GAP));
+    }    public boolean collidesWith(int birdX, int birdY) {
+        // Add a small buffer (5 pixels) for more forgiving collision detection
+        return (birdX + 45 > x && birdX + 5 < x + WIDTH
+                && (birdY + 5 < topHeight || birdY + 45 > topHeight + GAP));
     }
 }
